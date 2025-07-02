@@ -4,12 +4,12 @@ import pandas as pd
 
 CST = ''
 X_SECURITY_TOKEN = ''
-with open('config.json') as config_file:
+with open('proyecto_final/config.json') as config_file:
     config = json.load(config_file)
     API_KEY = config['API_KEY']
     USERNAME = config['USERNAME']
     PASSWORD = config['PASSWORD']
-    API_URL = 'https://api-capital.backend-capital.com/'  
+    API_URL = 'https://demo-api-capital.backend-capital.com/'  
 
 
 
@@ -131,14 +131,6 @@ def obtener_precio(epic=''):
         print("Código:", response.status_code)
         print("Respuesta:", response.text)
 
-def calcular_atr(df, period=10):
-    df['h-l'] = df['high'] - df['low']
-    df['h-c'] = abs(df['high'] - df['close'].shift())
-    df['l-c'] = abs(df['low'] - df['close'].shift())
-    df['tr'] = df[['h-l', 'h-c', 'l-c']].max(axis=1)
-    df['atr'] = df['tr'].rolling(window=period).mean()
-    return df
-
 
 #mercado de criptomonedas a largo plazo
 def analizar_criptomonedas(epic='', resolution='HOUR', num_velas=150):
@@ -228,7 +220,7 @@ def analizar_criptomonedas(epic='', resolution='HOUR', num_velas=150):
 
 
 #REGISTROS DEL BOT
-def registro_bot(archivo='registro.json', comprar=False, vender=False):
+def registro_bot(archivo='proyecto_final/registro.json', comprar=False, vender=False):
     # Si el archivo no existe, se crea con valores iniciales
     if not os.path.exists(archivo):
         data = {
@@ -258,15 +250,37 @@ def registro_bot(archivo='registro.json', comprar=False, vender=False):
 
 def bot():
     login()
+
+    print("\n" + "=" * 60)
+    print("🤖 BOT DE TRADING AUTOMÁTICO".center(60))
+    print("=" * 60)
+
+    user = input("🧑 Ingrese su usuario: ")
+    print(f"\n👋 Bienvenido, amo {user}")
+
     posicion_abierta = None  # puede ser "comprar", "vender" o None
     precio_entrada = None
-    print("Buenas, amo kayro")
-    epic = input("¿Qué activo deseas operar? disponibles:ETHUSD O GOLD: ")
-    print("_"*50)
-    cantidad_compra = float(input("¿Cuántas acciones deseas comprar? "))
 
+    print("\n" + "-" * 60)
+    cantidad_compra = input("📦 ¿Cuántas acciones deseas comprar? ")
+    epic = input("📊 ¿Qué activo deseas operar? (disponibles: ETHUSD o GOLD): ").upper()
 
+    while True:
+        if epic not in ['ETHUSD', 'GOLD']:
+            print("Activo no válido. Por favor, elige entre ETHUSD o GOLD.")
+            epic = input("¿Qué activo deseas operar? disponibles:ETHUSD O GOLD: ").upper()
+        else:
+            break
 
+    while True:
+
+        if cantidad_compra <= 0:
+            print("Cantidad no válida. Debe ser un número positivo.")
+            cantidad_compra = float(input("¿Cuántas acciones deseas comprar? "))
+        else:
+            break
+
+    #bucle principal del bot
     while True:
         try:
             resultado = analizar_criptomonedas(epic=epic)
