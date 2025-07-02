@@ -272,13 +272,6 @@ def bot():
         else:
             break
 
-    while True:
-
-        if cantidad_compra <= 0:
-            print("Cantidad no válida. Debe ser un número positivo.")
-            cantidad_compra = float(input("¿Cuántas acciones deseas comprar? "))
-        else:
-            break
 
     #bucle principal del bot
     while True:
